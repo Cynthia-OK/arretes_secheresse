@@ -1,41 +1,31 @@
-name: Téléchargement quotidien du fichier 
+name: Téléchargement quotidien du fichier
 
-# Déclenche le workflow selon une planification (cron)
 on:
   schedule:
-    # Syntaxe cron : minute heure jour mois jour_de_la_semaine
-    # Ici, tous les jours à 8h00 UTC (9h00 en France)
+    # Tous les jours à 17h30 UTC (18h30 en France)
     - cron: '30 17 * * *'
-  workflow_dispatch:  # Permet de lancer manuellement depuis l'interface GitHub
-  
-# Définition du job
+  workflow_dispatch:  # Permet de lancer manuellement
+
 jobs:
   download:
-    # Utilise un runner Ubuntu
     runs-on: ubuntu-latest
 
     steps:
-      # Étape 1 : Checkout le dépôt (optionnel, si tu veux sauvegarder le fichier dans ton repo)
       - name: Checkout du dépôt
         uses: actions/checkout@v4
 
-      # Étape 2 : Télécharger le fichier avec curl
       - name: Télécharger le fichier
+        id: download_file  # Identifiant pour récupérer la sortie
         run: |
-          # URL du fichier à télécharger
           URL="https://www.data.gouv.fr/api/1/datasets/r/bfba7898-aed3-40ec-aa74-abb73b92a363"
-          # Nom du fichier de sortie
           OUTPUT="fichier_geojson_$(date +%Y-%m-%d).json"
-          # Commande curl pour télécharger le fichier
           curl -L "$URL" -o "$OUTPUT"
-          # Afficher un message de confirmation
           echo "Fichier téléchargé : $OUTPUT"
+          # Stocke le nom du fichier pour les étapes suivantes
+          echo "filename=$OUTPUT" >> $GITHUB_OUTPUT
 
-      # Étape 3 (optionnelle) : Sauvegarder le fichier comme artifact pour le récupérer plus tard
       - name: Sauvegarder le fichier comme artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fichier-geojson_${{ steps.download.outputs.filename }}
-          path: "${{ steps.download.outputs.filename }}"
-
-  
+          name: fichier-geojson_$(date +%Y-%m-%d)  # Nom de l'artifact avec la date
+          path: "${{ steps.download_file.outputs.filename }}"
