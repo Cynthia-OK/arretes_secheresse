@@ -19,6 +19,7 @@ jobs:
         run: |
           URL="https://www.data.gouv.fr/api/1/datasets/r/bfba7898-aed3-40ec-aa74-abb73b92a363"
           OUTPUT="fichier_geojson_$(date +%Y-%m-%d).json"
+          date = "$(date +%Y-%m-%d)"
           curl -L "$URL" -o "$OUTPUT"
           echo "Fichier téléchargé : $OUTPUT"
           echo "filename=$OUTPUT" >> $GITHUB_OUTPUT
