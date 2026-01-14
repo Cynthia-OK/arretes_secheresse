@@ -25,7 +25,7 @@ jobs:
           # URL du fichier à télécharger
           URL="https://www.data.gouv.fr/api/1/datasets/r/bfba7898-aed3-40ec-aa74-abb73b92a363"
           # Nom du fichier de sortie
-          OUTPUT="fichier_telecharge_$(date +%Y-%m-%d).json"
+          OUTPUT="fichier_geojson_$(date +%Y-%m-%d).json"
           # Commande curl pour télécharger le fichier
           curl -L "$URL" -o "$OUTPUT"
           # Afficher un message de confirmation
@@ -35,7 +35,7 @@ jobs:
       - name: Sauvegarder le fichier comme artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fichier-telecharge_${{ steps.download.outputs.filename }}
+          name: fichier-geojson_${{ steps.download.outputs.filename }}
           path: "${{ steps.download.outputs.filename }}"
 
   
