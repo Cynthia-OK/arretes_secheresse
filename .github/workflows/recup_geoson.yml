@@ -3,7 +3,7 @@ name: Téléchargement quotidien du fichier
 on:
   schedule:
     # Tous les jours à 17h30 UTC (18h30 en France)
-    - cron: '30 17 * * *'
+    - cron: '50 17 * * *'  
   workflow_dispatch:  # Permet de lancer manuellement
 
 jobs:
@@ -15,17 +15,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Télécharger le fichier
-        id: download_file  # Identifiant pour récupérer la sortie
+        id: download_file
         run: |
           URL="https://www.data.gouv.fr/api/1/datasets/r/bfba7898-aed3-40ec-aa74-abb73b92a363"
           OUTPUT="fichier_geojson_$(date +%Y-%m-%d).json"
           curl -L "$URL" -o "$OUTPUT"
           echo "Fichier téléchargé : $OUTPUT"
-          # Stocke le nom du fichier pour les étapes suivantes
           echo "filename=$OUTPUT" >> $GITHUB_OUTPUT
 
       - name: Sauvegarder le fichier comme artifact
         uses: actions/upload-artifact@v4
         with:
           name: geojson_$(date +%Y-%m-%d)  # Nom de l'artifact avec la date
-          path: "fichiers_$(date +%Y-%m-%d)*.json"
+          path: "${{ steps.download_file.outputs.filename }}"  # Utilise le nom exact du fichier téléchargé
