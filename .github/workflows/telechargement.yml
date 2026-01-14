@@ -5,7 +5,7 @@ on:
   schedule:
     # Syntaxe cron : minute heure jour mois jour_de_la_semaine
     # Ici, tous les jours à 8h00 UTC (9h00 en France)
-    - cron: '30 11 * * *'
+    - cron: '30 14 * * *'
 
 # Définition du job
 jobs:
@@ -34,7 +34,7 @@ jobs:
       - name: Sauvegarder le fichier comme artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fichier-telecharge
-          path: "*.json"
+          name: fichier-telecharge_${{ steps.download.outputs.filename }}
+          path: "${{ steps.download.outputs.filename }}"
 
   
