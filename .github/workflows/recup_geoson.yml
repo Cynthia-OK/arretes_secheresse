@@ -19,7 +19,7 @@ jobs:
         run: |
           URL="https://www.data.gouv.fr/api/1/datasets/r/bfba7898-aed3-40ec-aa74-abb73b92a363"
           OUTPUT="fichier_geojson_$(date +%Y-%m-%d).json"
-          date = "$(date +%Y-%m-%d)"
+          date_jour = "$(date +%Y-%m-%d)"
           curl -L "$URL" -o "$OUTPUT"
           echo "Fichier téléchargé : $OUTPUT"
           echo "filename=$OUTPUT" >> $GITHUB_OUTPUT
@@ -27,5 +27,5 @@ jobs:
       - name: Sauvegarder le fichier comme artifact
         uses: actions/upload-artifact@v4
         with:
-          name: geojson_${{ steps.download_file.outputs.date }}  # Nom de l'artifact avec la date
+          name: geojson_${{ steps.download_file.outputs.date_jour }}  # Nom de l'artifact avec la date
           path: "${{ steps.download_file.outputs.filename }}"  # Utilise le nom exact du fichier téléchargé
