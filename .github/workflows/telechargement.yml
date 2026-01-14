@@ -5,7 +5,7 @@ on:
   schedule:
     # Syntaxe cron : minute heure jour mois jour_de_la_semaine
     # Ici, tous les jours à 8h00 UTC (9h00 en France)
-    - cron: '05 16 * * *'
+    - cron: '55 17 * * *'
 
 # Définition du job
 jobs:
