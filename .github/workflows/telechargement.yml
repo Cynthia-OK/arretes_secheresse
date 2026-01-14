@@ -1,0 +1,40 @@
+name: Téléchargement quotidien du fichier
+
+# Déclenche le workflow selon une planification (cron)
+on:
+  schedule:
+    # Syntaxe cron : minute heure jour mois jour_de_la_semaine
+    # Ici, tous les jours à 8h00 UTC (9h00 en France)
+    - cron: '30 11 * * *'
+
+# Définition du job
+jobs:
+  download:
+    # Utilise un runner Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Étape 1 : Checkout le dépôt (optionnel, si tu veux sauvegarder le fichier dans ton repo)
+      - name: Checkout du dépôt
+        uses: actions/checkout@v4
+
+      # Étape 2 : Télécharger le fichier avec curl
+      - name: Télécharger le fichier
+        run: |
+          # URL du fichier à télécharger
+          URL="https://www.data.gouv.fr/api/1/datasets/r/bfba7898-aed3-40ec-aa74-abb73b92a363"
+          # Nom du fichier de sortie
+          OUTPUT="fichier_telecharge_$(date +%Y-%m-%d).json"
+          # Commande curl pour télécharger le fichier
+          curl -L "$URL" -o "$OUTPUT"
+          # Afficher un message de confirmation
+          echo "Fichier téléchargé : $OUTPUT"
+
+      # Étape 3 (optionnelle) : Sauvegarder le fichier comme artifact pour le récupérer plus tard
+      - name: Sauvegarder le fichier comme artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fichier-telecharge
+          path: "*.json"
+
+  
