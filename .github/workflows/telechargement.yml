@@ -27,5 +27,5 @@ jobs:
       - name: Sauvegarder le fichier comme artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fichier-geojson_$(date +%Y-%m-%d)  # Nom de l'artifact avec la date
-          path: "${{ steps.download_file.outputs.filename }}"
+          name: geojson_$(date +%Y-%m-%d)  # Nom de l'artifact avec la date
+          path: "fichiers_$(date +%Y-%m-%d)"
