@@ -28,4 +28,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: geojson_$(date +%Y-%m-%d)  # Nom de l'artifact avec la date
-          path: "fichiers_$(date +%Y-%m-%d)"
+          path: "fichiers_$(date +%Y-%m-%d)*.json"
