@@ -17,7 +17,7 @@ jobs:
       - name: Télécharger les fichiers si 11h15 (Paris)
         run: python download_at_1115.py
       - name: Archiver les fichiers
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: donnees-eau-11h15
           path: '*.geojson'
