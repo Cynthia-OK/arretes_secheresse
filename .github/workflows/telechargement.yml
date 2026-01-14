@@ -1,4 +1,4 @@
-name: Téléchargement quotidien du fichier
+name: Téléchargement quotidien du fichier 
 
 # Déclenche le workflow selon une planification (cron)
 on:
