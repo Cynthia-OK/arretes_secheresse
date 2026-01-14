@@ -1,23 +1,39 @@
-name: Téléchargement automatique des données datagouv à une heure précise sans dépendance au fuseau horaire
+name: Téléchargement quotidien du fichier
+
+# Déclenche le workflow selon une planification (cron)
 on:
   schedule:
-    - cron: '0 * * * *'  # Toutes les heures (pour vérifier l'heure locale)
-  workflow_dispatch:  # Permet de lancer manuellement le workflow
+    # Syntaxe cron : minute heure jour mois jour_de_la_semaine
+    # Ici, tous les jours à 8h00 UTC (9h00 en France)
+    - cron: '0 8 * * *'
+
+# Définition du job
 jobs:
   download:
+    # Utilise un runner Ubuntu
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Configurer Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-      - name: Installer les dépendances
-        run: pip install requests pytz
-      - name: Télécharger les fichiers si 11h15 (Paris)
-        run: python download_at_1115.py
-      - name: Archiver les fichiers
+      # Étape 1 : Checkout le dépôt (optionnel, si tu veux sauvegarder le fichier dans ton repo)
+      - name: Checkout du dépôt
+        uses: actions/checkout@v4
+
+      # Étape 2 : Télécharger le fichier avec curl
+      - name: Télécharger le fichier
+        run: |
+          # URL du fichier à télécharger
+          URL="https://www.data.gouv.fr/api/1/datasets/r/bfba7898-aed3-40ec-aa74-abb73b92a363"
+          # Nom du fichier de sortie
+          OUTPUT="fichier_telecharge_$(date +%Y-%m-%d).json"
+          # Commande curl pour télécharger le fichier
+          curl -L "$URL" -o "$OUTPUT"
+          # Afficher un message de confirmation
+          echo "Fichier téléchargé : $OUTPUT"
+
+      # Étape 3 (optionnelle) : Sauvegarder le fichier comme artifact pour le récupérer plus tard
+      - name: Sauvegarder le fichier comme artifact
         uses: actions/upload-artifact@v4
         with:
-          name: donnees-eau-11h15
-          path: '*.geojson'
+          name: fichier-telecharge
+          path: "*.json"
+
