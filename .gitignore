@@ -216,3 +216,4 @@ geojson/
 *.html
 export_data/
 .github/workflows/download.yml
+logos/
