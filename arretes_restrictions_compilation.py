@@ -19,6 +19,7 @@ from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 import matplotlib.image as mpimg
 from matplotlib.lines import Line2D
 import streamlit as st
+import calendar
 
 def recuperation_fichiers_geojson(mois,annee,dossier_stockage):
     """
@@ -33,10 +34,16 @@ def recuperation_fichiers_geojson(mois,annee,dossier_stockage):
     # Dictionnaire pour stocker les DataFrames (clé = nom du fichier, valeur = DataFrame)
     dataframes = {}
 
+    # Parcourir les fichiers dans le dossier de stockage
+    #compter le nombre de fichiers traités
+    fichiers_traites = 0
+
     for file in STORAGE.iterdir():
         # 1. Vérifier si le fichier est un GeoJSON (extension .json ou .geojson)
         if file.suffix.lower() in [".json", ".geojson"]:
             print(f"Fichier trouvé : {file.name}")
+            #incrementer le compteur de fichiers traités
+            fichiers_traites += 1
 
             # 2. Récupérer les métadonnées du fichier pour la date de création
             stat = file.stat()
@@ -93,7 +100,7 @@ def recuperation_fichiers_geojson(mois,annee,dossier_stockage):
 
             # Afficher un résumé
             print(f"DataFrame '{file.stem}' créé avec {len(gdf)} géométries.\n")
-    return dataframes
+    return dataframes, fichiers_traites
 
 
 
@@ -424,13 +431,14 @@ def create_gradient_map(data, mois, annee, dossier_cartes):
 
 # fonction principale pour générer la carte globale
 def global_carte(mois, annee, dossier_stockage, dossier_cartes):
-    dfs = recuperation_fichiers_geojson(mois=mois, annee=annee, dossier_stockage=dossier_stockage)
+    dfs, fichiers_traites = recuperation_fichiers_geojson(mois=mois, annee=annee, dossier_stockage=dossier_stockage)
     bilan_mois = compilation_restrictions_mensuelles(dfs)
     departements_gdf = recuperation_departements()
     merged_gdf = fusionner_donnees_departements(bilan_mois, departements_gdf)
     metropole_gdf = filtre_metropole(merged_gdf)
     create_bar_chart_map(metropole_gdf, mois, annee, dossier_cartes)
     create_gradient_map(metropole_gdf, mois, annee, dossier_cartes)
+    return fichiers_traites
 
 
 # ## Dossier de stockage : à modifier si utilisation du réseau
@@ -456,10 +464,16 @@ start_button = st.button("Générer la carte")
 if start_button:
     mois = int(mois)
     annee = int(annee)
+    # récuperer le nombre de jours dans le mois
+    jours_dans_mois = calendar.monthrange(annee, mois)[1]
     #Afficher spinner de chargement
     with st.spinner('Génération de la carte en cours...'):
         # Génération de la carte
-        global_carte(mois, annee, dossier_stockage, dossier_image)
+        fichiers_traites = global_carte(mois, annee, dossier_stockage, dossier_image)
+
+    #afficher le nombre de fichiers traités
+    st.info(f"Les fichiers geojson du mois {mois} et de l'année {annee} ont été traités.")
+    st.info(f"{fichiers_traites} fichiers traités pour un total de {jours_dans_mois} jours dans le mois.")
   
 
     # Afficher un message de confirmation
